@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Álbum de Fotos - Isaac y Anabelen</title>
+    <style>
+        :root {
+            --primary-color: #FFD1DC; /* Rosa claro */
+            --secondary-color: #E6E6FA; /* Lavanda */
+            --accent-color: #FFA07A; /* Salmón claro */
+            --text-color: #4A4A4A;
+            --background-color: #FFF5EE; /* Seashell */
+        }
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        header {
+            background-color: var(--primary-color);
+            padding: 40px 0;
+            text-align: center;
+        }
+        h1 {
+            color: var(--text-color);
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: var(--accent-color);
+            font-size: 2em;
+            font-weight: bold;
+        }
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #upload-form {
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #upload-form input[type="file"], #upload-form input[type="text"] {
+            margin-bottom: 10px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: var(--accent-color);
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #FF8C69;
+        }
+        #gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .image-container {
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .image-container img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        .image-container p {
+            padding: 10px;
+            margin: 0;
+            text-align: center;
+            font-style: italic;
+        }
+        #admin-login {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        #admin-login:hover {
+            opacity: 1;
+        }
+        #admin-login svg {
+            width: 100%;
+            height: 100%;
+        }
+        #admin-panel {
+            display: none;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .pending-photo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .pending-photo img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Álbum de Fotos</h1>
+        <div class="subtitle">Isaac y Anabelen</div>
+    </header>
+    
+    <main>
+        <form id="upload-form">
+            <input type="text" id="guest-name" placeholder="Tu nombre" required>
+            <input type="file" id="image-input" accept="image/*" multiple required>
+            <button type="submit">Comparte tus fotitos de la boda</button>
+        </form>
+
+        <div id="gallery"></div>
+
+        <div id="admin-panel">
+            <h2>Panel de Administración</h2>
+            <div id="pending-photos"></div>
+        </div>
+    </main>
+
+    <button id="admin-login" title="Iniciar sesión de administrador">
+        <svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="1" width="4" height="1" fill="#FFD700"/>
+            <rect x="1" y="2" width="1" height="4" fill="#FFD700"/>
+            <rect x="6" y="2" width="1" height="4" fill="#FFD700"/>
+            <rect x="2" y="6" width="4" height="1" fill="#FFD700"/>
+            <rect x="3" y="3" width="2" height="2" fill="#FFD700"/>
+        </svg>
+    </button>
+
+    <script>
+        // Simular almacenamiento local para este ejemplo
+        let photos = JSON.parse(localStorage.getItem('photos')) || [];
+        let pendingPhotos = JSON.parse(localStorage.getItem('pendingPhotos')) || [];
+
+        document.getElementById('upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const guestName = document.getElementById('guest-name').value;
+            const files = document.getElementById('image-input').files;
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    pendingPhotos.push({
+                        src: e.target.result,
+                        name: guestName
+                    });
+                    localStorage.setItem('pendingPhotos', JSON.stringify(pendingPhotos));
+                    alert('¡Foto subida con éxito! Estará visible después de ser aprobada.');
+                };
+                reader.readAsDataURL(file);
+            }
+
+            document.getElementById('guest-name').value = '';
+            document.getElementById('image-input').value = '';
+        });
+
+        function displayPhotos() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+            photos.forEach(photo => {
+                const container = document.createElement('div');
+                container.className = 'image-container';
+                const img = document.createElement('img');
+                img.src = photo.src;
+                const p = document.createElement('p');
+                p.textContent = photo.name;
+                container.appendChild(img);
+                container.appendChild(p);
+                gallery.appendChild(container);
+            });
+        }
+
+        function displayPendingPhotos() {
+            const pendingContainer = document.getElementById('pending-photos');
+            pendingContainer.innerHTML = '';
+            pendingPhotos.forEach((photo, index) => {
+                const div = document.createElement('div');
+                div.className = 'pending-photo';
+                const img = document.createElement('img');
+                img.src = photo.src;
+                const approveBtn = document.createElement('button');
+                approveBtn.textContent = 'Aprobar';
+                approveBtn.onclick = () => approvePhoto(index);
+                const rejectBtn = document.createElement('button');
+                rejectBtn.textContent = 'Rechazar';
+                rejectBtn.onclick = () => rejectPhoto(index);
+                div.appendChild(img);
+                div.appendChild(approveBtn);
+                div.appendChild(rejectBtn);
+                pendingContainer.appendChild(div);
+            });
+        }
+
+        function approvePhoto(index) {
+            const photo = pendingPhotos.splice(index, 1)[0];
+            photos.push(photo);
+            updateLocalStorage();
+            displayPhotos();
+            displayPendingPhotos();
+        }
+
+        function rejectPhoto(index) {
+            pendingPhotos.splice(index, 1);
+            updateLocalStorage();
+            displayPendingPhotos();
+        }
+
+        function updateLocalStorage() {
+            localStorage.setItem('photos', JSON.stringify(photos));
+            localStorage.setItem('pendingPhotos', JSON.stringify(pendingPhotos));
+        }
+
+        document.getElementById('admin-login').addEventListener('click', function() {
+            const password = prompt("Ingrese la contraseña de administrador:");
+            if (password === "admin123") {  // Cambia esto por una contraseña más segura
+                document.getElementById('admin-panel').style.display = 'block';
+                displayPendingPhotos();
+            } else {
+                alert("Contraseña incorrecta");
+            }
+        });
+
+        displayPhotos();
+    </script>
+</body>
+</html>
