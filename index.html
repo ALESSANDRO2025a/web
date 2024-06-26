@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Álbum de Fotos - Isaac y Anabelen</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Álbum de Fotos</h1>
+        <div class="subtitle">Isaac y Anabelen</div>
+    </header>
+    
+    <main>
+        <form id="upload-form">
+            <input type="text" id="guest-name" placeholder="Tu nombre" required>
+            <input type="file" id="image-input" accept="image/*" multiple required>
+            <button type="submit">Comparte tus fotitos de la boda</button>
+        </form>
+
+        <div id="gallery"></div>
+
+        <div id="admin-panel">
+            <h2>Panel de Administración</h2>
+            <div id="pending-photos"></div>
+        </div>
+    </main>
+
+    <button id="admin-login" title="Iniciar sesión de administrador">
+        <svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="1" width="4" height="1" fill="#FFD700"/>
+            <rect x="1" y="2" width="1" height="4" fill="#FFD700"/>
+            <rect x="6" y="2" width="1" height="4" fill="#FFD700"/>
+            <rect x="2" y="6" width="4" height="1" fill="#FFD700"/>
+            <rect x="3" y="3" width="2" height="2" fill="#FFD700"/>
+        </svg>
+    </button>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
